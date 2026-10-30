@@ -1,0 +1,40 @@
+services:
+  app:
+    build:
+      context: .
+    profiles: ["app"]
+    ports:
+      - "8501:8501"
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-openai/gpt-4.1-mini}
+
+  debug:
+    build:
+      context: .
+    profiles: ["debug"]
+    command:
+      [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "debugpy",
+        "--listen",
+        "0.0.0.0:5678",
+        "-m",
+        "streamlit",
+        "run",
+        "app.py",
+        "--server.address=0.0.0.0",
+        "--server.port=8501"
+      ]
+    ports:
+      - "8501:8501"
+      - "5678:5678"
+    volumes:
+      - .:/app
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-openai/gpt-4.1-mini}
+
